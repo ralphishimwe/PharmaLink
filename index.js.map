@@ -1,0 +1,1 @@
+{"mappings":"AAAA,kBAAkB,GAClB,QAAQ,GAAG,CAAC","sources":["public/js/index.js"],"sourcesContent":["/* eslint-disable */\nconsole.log('hello from parcel');\n"],"names":[],"version":3,"file":"index.js.map","sourceRoot":"/"}
