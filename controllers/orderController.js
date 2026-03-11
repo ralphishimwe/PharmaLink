@@ -2,8 +2,53 @@ const Order = require("../models/orderModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const factory = require("./handlerFactory");
+const inventoryService = require("../services/inventoryService");
+const orderService = require("../services/orderService");
+
+exports.placeOrder = catchAsync(async (req, res, next) => {
+  const { pharmacyId, items, deliveryAddress } = req.body || {};
+
+  if (!deliveryAddress) {
+    return next(new AppError("deliveryAddress is required", 400));
+  }
+
+  // 1) Validate inventory & price items from Inventory (server-side pricing)
+  const { pricedItems, totalAmount } = await orderService.buildPricedOrderItems({
+    pharmacyId,
+    items,
+  });
+
+  // 2) Create order with proper defaults
+  const order = await Order.create({
+    pharmacy: pharmacyId,
+    user: req.user.id,
+    items: pricedItems,
+    totalAmount,
+    paymentStatus: "unpaid",
+    orderStatus: "pending",
+    deliveryAddress,
+    stockDeducted: false,
+  });
+
+  // 3) Return minimal payload for payment step
+  res.status(201).json({
+    status: "success",
+    data: {
+      orderId: order._id,
+      totalAmount: order.totalAmount,
+      paymentStatus: order.paymentStatus,
+      orderStatus: order.orderStatus,
+    },
+  });
+});
 
 exports.createOrder = catchAsync(async (req, res, next) => {
+  // Validate stock exists and is sufficient (no deduction here).
+  await inventoryService.validateStockForOrder({
+    pharmacyId: req.body.pharmacy,
+    items: req.body.items,
+  });
+
   // Calculate subtotals for each item
   const items = req.body.items.map((item) => ({
     medicine: item.medicine,

@@ -43,17 +43,22 @@ const orderSchema = new mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      required: [true, "An order must have current payment status"],
+      default: "unpaid",
       enum: ["paid", "unpaid"]
     },
     orderStatus: {
       type: String,
-      required: [true, "An order must have current order status"],
+      default: "pending",
       enum: ["pending", "confirmed","delivered","cancelled"]
     },
     deliveryAddress:{
       type: String,
       required: [true, "An order must have delivery address"]
+    },
+    // Prevents double-deduction if payment confirmation/webhook retries occur.
+    stockDeducted: {
+      type: Boolean,
+      default: false,
     },
     createdAt: { type: Date, default: Date.now() },
   },

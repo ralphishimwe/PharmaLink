@@ -26,11 +26,12 @@ const paymentSchema = new mongoose.Schema(
     },
     transactionID: {
       type: String,
-      required: [true, "Payment must have transactionID"],
+      required: [true, "Payment must have transactionID"], 
+      unique: true,
     },
     status: {
       type: String,
-      required: [true, "Payment must have current payment status"],
+      default: "pending",
       enum: ["successful", "failed", "pending"],
     },
     paidAt: { type: Date, default: Date.now() },
