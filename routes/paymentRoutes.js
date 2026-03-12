@@ -18,8 +18,8 @@ router.post(
   paymentController.initiatePayment,
 );
 
-router.route("/").get(paymentController.getAllPayments).post(
-  authController.restrictTo("user", "admin"),
+router.route("/").get(authController.restrictTo("admin"), paymentController.getAllPayments).post(
+  authController.restrictTo("admin"),
   paymentController.createPayment,
 );
 router

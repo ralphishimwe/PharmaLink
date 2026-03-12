@@ -29,6 +29,10 @@ const inventorySchema = new mongoose.Schema(
       type: String,
       required: [true, "A Pharmacy product must have a batch number"],
     },
+    // Optional expiry date for a specific batch of medicine in this pharmacy
+    expiryDate: {
+      type: Date,
+    },
     createdAt: { type: Date, default: Date.now() },
     isAvailable: {
       type: Boolean,

@@ -4,6 +4,9 @@ const medicineController = require("../controllers/medicineController");
 
 const router = express.Router({ mergeParams: true });
 
+// Global medicine search across all pharmacies with current stock
+router.get("/search", medicineController.searchMedicines);
+
 router.use(authController.protect);
 
 router

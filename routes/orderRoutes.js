@@ -4,34 +4,34 @@ const orderController = require("../controllers/orderController");
 
 const router = express.Router({ mergeParams: true });
 
+router.use(authController.protect);
+
+
 // Dedicated order placement flow (validated + priced from Inventory)
 router.post(
   "/place",
-  authController.protect,
   authController.restrictTo("user", "admin"),
   orderController.placeOrder,
 );
 
 router
   .route("/")
-  .get(orderController.getAllOrders)
+  .get(authController.restrictTo("admin"), orderController.getAllOrders)
   .post(
-    authController.protect,
     authController.restrictTo("admin"),
     orderController.createOrder
   );
 
-router.use(authController.protect);
 
 router
   .route("/:id")
   .get(orderController.getOrder)
   .patch(
-    authController.restrictTo("user", "staff", "admin"),
+    authController.restrictTo("staff", "admin"),
     orderController.updateOrder
   )
   .delete(
-    authController.restrictTo("admin"),
+    authController.restrictTo("staff", "admin"),
     orderController.deleteOrder
   );
 

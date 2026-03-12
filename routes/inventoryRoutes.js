@@ -4,20 +4,19 @@ const inventoryController = require("../controllers/inventoryController");
 
 const router = express.Router({ mergeParams: true });
 
+router.use(authController.protect);
+
 router
   .route("/")
-  .get(inventoryController.getAllInventories)
+  .get(authController.restrictTo("admin"), inventoryController.getAllInventories)
   .post(
-    authController.protect,
     authController.restrictTo("staff", "admin"),
     inventoryController.createInventory
   );
 
-router.use(authController.protect);
-
 router
   .route("/:id")
-  .get(inventoryController.getInventory)
+  .get(authController.restrictTo("admin"), inventoryController.getInventory)
   .patch(
     authController.restrictTo("staff", "admin"),
     inventoryController.updateInventory

@@ -1,5 +1,6 @@
 const express = require("express");
 const pharmacyController = require("../controllers/pharmacyController");
+const inventoryController = require("../controllers/inventoryController");
 const authController = require("../controllers/authController");
 
 
@@ -27,5 +28,10 @@ router
     authController.restrictTo("admin"),
     pharmacyController.deletePharmacy
   );
+
+// List all inventory items for a specific pharmacy with search/sort support
+router
+  .route("/:id/inventories")
+  .get(inventoryController.getPharmacyInventories);
 
 module.exports = router;
