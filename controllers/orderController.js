@@ -4,12 +4,17 @@ const AppError = require("../utils/appError");
 const factory = require("./handlerFactory");
 const inventoryService = require("../services/inventoryService");
 const orderService = require("../services/orderService");
+const paymentService = require("../services/paymentService");
 
 exports.placeOrder = catchAsync(async (req, res, next) => {
-  const { pharmacyId, items, deliveryAddress } = req.body || {};
+  const { pharmacyId, items, deliveryAddress, paymentMethod, provider } =
+    req.body || {};
 
   if (!deliveryAddress) {
     return next(new AppError("deliveryAddress is required", 400));
+  }
+  if (!paymentMethod) {
+    return next(new AppError("paymentMethod is required", 400));
   }
 
   // 1) Validate inventory & price items from Inventory (server-side pricing)
@@ -30,7 +35,14 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
     stockDeducted: false,
   });
 
-  // 3) Return minimal payload for payment step
+  // 3) Create a pending payment record for this order (provider can be swapped later)
+  await paymentService.getOrCreatePendingPayment({
+    order,
+    paymentMethod,
+    provider: provider || "irembopay",
+  });
+
+  // 4) Return minimal payload for payment step
   res.status(201).json({
     status: "success",
     data: {

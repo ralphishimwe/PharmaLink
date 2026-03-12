@@ -26,15 +26,23 @@ const paymentSchema = new mongoose.Schema(
     },
     transactionID: {
       type: String,
-      required: [true, "Payment must have transactionID"], 
-      unique: true,
+      // Set later by provider callback/webhook
+      sparse: true,
     },
     status: {
       type: String,
       default: "pending",
       enum: ["successful", "failed", "pending"],
     },
-    paidAt: { type: Date, default: Date.now() },
+    // Provider initiation metadata (optional; useful for client redirects / debugging)
+    providerReference: {
+      type: String,
+    },
+    paymentUrl: {
+      type: String,
+    },
+    createdAt: { type: Date, default: Date.now() },
+    paidAt: { type: Date },
   },
   {
     toJSON: { virtuals: true },
