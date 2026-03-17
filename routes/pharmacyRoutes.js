@@ -6,6 +6,14 @@ const authController = require("../controllers/authController");
 
 const router = express.Router();
 
+// Find pharmacies near the user or provided coordinates
+router.get(
+  "/nearby",
+  authController.protect,
+  authController.restrictTo("user", "staff", "admin"),
+  pharmacyController.getNearbyPharmacies,
+);
+
 router
   .route("/")
   .get(pharmacyController.getAllPharmacies)

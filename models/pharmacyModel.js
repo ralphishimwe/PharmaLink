@@ -32,7 +32,6 @@ const pharmacySchema = new mongoose.Schema(
       type: {
         type: String,
         enum: ["Point"],
-        default: "Point",
       },
       coordinates: {
         type: [Number], // [longitude, latitude]
@@ -64,7 +63,10 @@ const pharmacySchema = new mongoose.Schema(
 
 pharmacySchema.index({ slug: 1 });
 
-// Geocode address before saving
+// Required for $geoNear: index the full GeoJSON "location" object, not just coordinates
+pharmacySchema.index({ location: "2dsphere" });
+
+// Geocode address before saving (create + save)
 pharmacySchema.pre("save", async function (next) {
   if (!this.isModified("address")) return next();
 
@@ -83,6 +85,35 @@ pharmacySchema.pre("save", async function (next) {
   } catch (err) {
     console.error("Geocoding error:", err);
     // Continue without location if geocoding fails
+  }
+  next();
+});
+
+// Geocode address when pharmacy is updated via findByIdAndUpdate (e.g. PATCH)
+pharmacySchema.pre("findOneAndUpdate", async function (next) {
+  const update = this.getUpdate();
+  // Mongoose may pass a plain object or one wrapped in $set
+  const address = update.$set?.address ?? update.address;
+  if (!address) return next();
+
+  try {
+    const res = await geocoder.geocode(address);
+    if (res && res.length > 0) {
+      const location = {
+        type: "Point",
+        coordinates: [res[0].longitude, res[0].latitude],
+        formattedAddress: res[0].formattedAddress || address,
+        city: res[0].city || "",
+        country: res[0].country || "",
+      };
+      if (update.$set) {
+        update.$set.location = location;
+      } else {
+        update.location = location;
+      }
+    }
+  } catch (err) {
+    console.error("Geocoding error on update:", err);
   }
   next();
 });

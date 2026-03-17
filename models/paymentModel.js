@@ -7,7 +7,7 @@ const paymentSchema = new mongoose.Schema(
     order: {
       type: mongoose.Schema.ObjectId,
       ref: "Order",
-      required: [true, "Paymet must for an order"],
+      required: [true, "Payment must for an order"],
     },
     amount: {
       type: Number,
@@ -22,7 +22,6 @@ const paymentSchema = new mongoose.Schema(
       type: String,
       required: [true, "Payment must have provider used for paying"],
       enum: ["irembopay"],
-      
     },
     transactionID: {
       type: String,
