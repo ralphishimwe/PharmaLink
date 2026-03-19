@@ -7,21 +7,20 @@ const orderService = require("../services/orderService");
 const paymentService = require("../services/paymentService");
 
 exports.placeOrder = catchAsync(async (req, res, next) => {
-  const { pharmacyId, items, deliveryAddress, paymentMethod, provider } =
+  const { pharmacyId, items, deliveryAddress, provider } =
     req.body || {};
 
   if (!deliveryAddress) {
     return next(new AppError("deliveryAddress is required", 400));
   }
-  if (!paymentMethod) {
-    return next(new AppError("paymentMethod is required", 400));
-  }
 
   // 1) Validate inventory & price items from Inventory (server-side pricing)
-  const { pricedItems, totalAmount } = await orderService.buildPricedOrderItems({
-    pharmacyId,
-    items,
-  });
+  const { pricedItems, totalAmount } = await orderService.buildPricedOrderItems(
+    {
+      pharmacyId,
+      items,
+    },
+  );
 
   // 2) Create order with proper defaults
   const order = await Order.create({
@@ -35,11 +34,10 @@ exports.placeOrder = catchAsync(async (req, res, next) => {
     stockDeducted: false,
   });
 
-  // 3) Create a pending payment record for this order (provider can be swapped later)
+  // 3) Create a pending payment record for this order (Stripe is the default provider)
   await paymentService.getOrCreatePendingPayment({
     order,
-    paymentMethod,
-    provider: provider || "irembopay",
+    provider: provider || "stripe",
   });
 
   // 4) Return minimal payload for payment step

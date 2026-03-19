@@ -44,8 +44,16 @@ const limiter = rateLimit({
 
 app.use("/api", limiter);
 
-//body parser, reading data from body into req.body
-app.use(express.json({ limit: "10kb" }));
+// Body parser (JSON) + capture raw bytes for Stripe webhook verification.
+// Stripe requires the original request payload bytes to verify the signature.
+app.use(
+  express.json({
+    limit: "10kb",
+    verify: (req, res, buf) => {
+      req.rawBody = buf;
+    },
+  }),
+);
 app.use(cookieParser());
 
 //Data Sanitization against NoSql query Injection
