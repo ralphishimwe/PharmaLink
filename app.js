@@ -1,5 +1,6 @@
 const path = require("path");
 const express = require("express");
+const cors = require("cors");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
@@ -29,6 +30,18 @@ app.use(express.static(path.join(__dirname, "public")));
 
 //Security Http Headers
 app.use(helmet());
+
+// Enable CORS for frontend (Vite default dev ports) so browser preflight
+// OPTIONS requests for signup/login are accepted.
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  }),
+);
+app.options("*", cors());
 
 // Development logging
 if (process.env.NODE_ENV === "development") {
