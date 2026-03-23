@@ -61,8 +61,22 @@ function SignupPage() {
 
       localStorage.setItem("token", token);
 
-      // Role-based redirect after signup
-      const role = response.data?.data?.user?.role;
+      // Role-based redirect after signup.
+      // Always overwrite/clear role so we never keep an old value from a previous session.
+      localStorage.removeItem("role");
+
+      let role = response.data?.data?.user?.role;
+      if (!role) {
+        // Fallback: derive role from the authenticated user endpoint.
+        try {
+          const meRes = await api.get("/users/me");
+          role = meRes.data?.data?.data?.role;
+        } catch (e) {
+          // If this fails, we just treat the user as non-staff.
+          role = null;
+        }
+      }
+
       if (role) localStorage.setItem("role", role);
 
       // Staff users land on their inventory dashboard.
