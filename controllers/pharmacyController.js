@@ -2,6 +2,7 @@ const Pharmacy = require("../models/pharmacyModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const factory = require("./handlerFactory");
+const getStaffPharmacy = require("../utils/getStaffPharmacy");
 
 // Get pharmacies near the user or custom coordinates using MongoDB geospatial queries.
 // - If lat/lng are provided as query params, use those coordinates.
@@ -89,6 +90,24 @@ exports.getAllPharmacies = factory.getAll(Pharmacy);
 exports.getPharmacy = factory.getOne(Pharmacy, {
   path: "staff",
   select: "-__v -location -role",
+});
+
+/**
+ * Staff: get the pharmacy assigned to this staff user.
+ * GET /api/v1/pharmacies/my
+ */
+exports.getMyPharmacyForStaff = catchAsync(async (req, res, next) => {
+  const pharmacy = await getStaffPharmacy(req.user.id);
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      data: {
+        _id: pharmacy._id,
+        name: pharmacy.name,
+      },
+    },
+  });
 });
 exports.createPharmacy = factory.createOne(Pharmacy);
 exports.updatePharmacy = factory.updateOne(Pharmacy);

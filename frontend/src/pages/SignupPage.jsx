@@ -61,8 +61,16 @@ function SignupPage() {
 
       localStorage.setItem("token", token);
 
-      // Redirect to placeholder home page after signup
-      navigate("/");
+      // Role-based redirect after signup
+      const role = response.data?.data?.user?.role;
+      if (role) localStorage.setItem("role", role);
+
+      // Staff users land on their inventory dashboard.
+      if (role === "staff") {
+        navigate("/staff/inventory", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       const message =
         error.response?.data?.message || "Signup failed. Please try again.";

@@ -1,5 +1,9 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
+// Default frontend URL for redirecting after Stripe checkout.
+// You can override it by setting FRONTEND_URL in config.env.
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+
 /**
  * Stripe payment provider integration.
  * Creates Stripe Checkout Sessions for payment initiation.
@@ -55,8 +59,10 @@ exports.initiate = async ({
     payment_method_types: ["card"],
     line_items: lineItems,
     mode: "payment",
-    success_url: `${process.env.BASE_URL}/api/v1/payments/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.BASE_URL}/api/v1/payments/cancel`,
+    // Redirect the user back to the React app after checkout.
+    // Backend confirmation happens via webhook — this redirect is only for UX.
+    success_url: `${FRONTEND_URL}/orders?paymentSuccess=1&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${FRONTEND_URL}/orders?paymentSuccess=0&session_id={CHECKOUT_SESSION_ID}`,
     metadata: {
       orderId: orderId, // Store orderId for webhook processing
     },

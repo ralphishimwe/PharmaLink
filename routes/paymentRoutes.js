@@ -37,6 +37,13 @@ router.post(
   paymentController.initiatePayment,
 );
 
+// Staff: payments for the staff user's assigned pharmacy
+router.get(
+  "/pharmacy",
+  authController.restrictTo("staff"),
+  paymentController.getPharmacyPayments,
+);
+
 router
   .route("/")
   .get(authController.restrictTo("admin"), paymentController.getAllPayments)

@@ -45,12 +45,16 @@ exports.searchMedicines = catchAsync(async (req, res, next) => {
     isAvailable: true,
   })
     .populate({ path: "medicine", select: "name" })
-    .populate({ path: "pharmacy", select: "name" });
+    .populate({ path: "pharmacy", select: "name address" });
 
-  // 3) Shape the response: one entry per inventory row with just the fields the client needs
+  // 3) Shape the response: one entry per inventory row (ids for checkout + navigation)
   let results = inventories.map((inv) => ({
+    inventoryId: inv._id,
+    medicineId: inv.medicine?._id,
+    pharmacyId: inv.pharmacy?._id,
     medicineName: inv.medicine?.name,
     pharmacyName: inv.pharmacy?.name,
+    pharmacyAddress: inv.pharmacy?.address,
     price: inv.price,
     quantity: inv.quantity,
     expiryDate: inv.expiryDate || null,

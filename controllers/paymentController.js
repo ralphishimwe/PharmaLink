@@ -7,6 +7,7 @@ const factory = require("./handlerFactory");
 const inventoryService = require("../services/inventoryService");
 const paymentService = require("../services/paymentService");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const getStaffPharmacy = require("../utils/getStaffPharmacy");
 
 exports.createPayment = factory.createOne(Payment);
 exports.getAllPayments = factory.getAll(Payment);
@@ -103,6 +104,15 @@ exports.updatePayment = catchAsync(async (req, res, next) => {
     return next(new AppError("No Payment Found with that Id", 404));
   }
 
+  // Staff can only update payments that belong to their assigned pharmacy
+  if (req.user && req.user.role === "staff") {
+    const pharmacy = await getStaffPharmacy(req.user.id);
+    const order = await Order.findById(payment.order);
+    if (!order || String(order.pharmacy) !== String(pharmacy._id)) {
+      return next(new AppError("Unauthorized", 401));
+    }
+  }
+
   const previousStatus = payment.status;
 
   // Apply allowed updates
@@ -138,6 +148,27 @@ exports.updatePayment = catchAsync(async (req, res, next) => {
     data: {
       data: payment,
     },
+  });
+});
+
+/**
+ * Staff: get payments for the staff user's assigned pharmacy.
+ * GET /api/v1/payments/pharmacy
+ */
+exports.getPharmacyPayments = catchAsync(async (req, res, next) => {
+  const pharmacy = await getStaffPharmacy(req.user.id);
+
+  const orders = await Order.find({ pharmacy: pharmacy._id }).select("_id");
+  const orderIds = orders.map((o) => o._id);
+
+  const payments = await Payment.find({ order: { $in: orderIds } }).sort({
+    createdAt: -1,
+  });
+
+  res.status(200).json({
+    status: "success",
+    results: payments.length,
+    data: { data: payments },
   });
 });
 exports.deletePayment = factory.deleteOne(Payment);
