@@ -31,17 +31,30 @@ app.use(express.static(path.join(__dirname, "public")));
 //Security Http Headers
 app.use(helmet());
 
-// Enable CORS for frontend (Vite default dev ports) so browser preflight
-// OPTIONS requests for signup/login are accepted.
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
-    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  }),
-);
-app.options("*", cors());
+// Enable CORS.
+// In development:  FRONTEND_URL is not set, so only localhost Vite ports are allowed.
+// In production:   FRONTEND_URL=https://your-app.vercel.app on Render so the
+//                  deployed frontend is also allowed.
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (curl, Postman, server-to-server).
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: origin ${origin} is not allowed`));
+  },
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 // Development logging
 if (process.env.NODE_ENV === "development") {

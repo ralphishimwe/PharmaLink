@@ -84,11 +84,6 @@ function ProfilePage() {
     setPasswordForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const valueOrCurrent = (inputValue, currentValue) => {
-    const v = String(inputValue ?? "").trim();
-    return v.length ? v : currentValue;
-  };
-
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
 
@@ -97,37 +92,38 @@ function ProfilePage() {
     setSuccessMessage("");
     setErrorMessage("");
 
-    const fullname = valueOrCurrent(profileForm.fullname, currentUser.fullname);
-    const address = valueOrCurrent(profileForm.address, currentUser.address);
-    const email = valueOrCurrent(profileForm.email, currentUser.email);
-    const phoneInput = valueOrCurrent(profileForm.phone, String(currentUser.phone || ""));
+    // Only include fields the user actually filled in — empty fields are left unchanged.
+    const payload = {};
+    const fn = profileForm.fullname.trim();
+    const em = profileForm.email.trim();
+    const ph = profileForm.phone.trim();
+    const ad = profileForm.address.trim();
 
-    // Simple client-side validation (matches signup rules you added)
-    if (String(fullname).length < 5) {
+    if (fn) payload.fullname = fn;
+    if (em) payload.email = em;
+    if (ph) payload.phone = ph;
+    if (ad) payload.address = ad;
+
+    if (Object.keys(payload).length === 0) {
+      setErrorMessage("Please fill in at least one field to update.");
+      return;
+    }
+
+    // Validate only the fields that were provided.
+    if (payload.fullname !== undefined && payload.fullname.length < 5) {
       setErrorMessage("Fullname must be at least 5 characters.");
       return;
     }
-    if (!email || !/^\S+@\S+\.\S+$/.test(String(email))) {
+    if (payload.email !== undefined && !/^\S+@\S+\.\S+$/.test(payload.email)) {
       setErrorMessage("Please provide a valid email.");
       return;
     }
-    if (!/^\d{10}$/.test(String(phoneInput))) {
+    if (payload.phone !== undefined && !/^\d{10}$/.test(payload.phone)) {
       setErrorMessage("Phone number must be exactly 10 digits.");
-      return;
-    }
-    if (!address || !String(address).trim()) {
-      setErrorMessage("Address is required.");
       return;
     }
 
     try {
-      const payload = {
-        fullname,
-        address,
-        email,
-        phone: String(phoneInput),
-      };
-
       await api.patch("/users/updateMe", payload);
       setSuccessMessage("Profile updated successfully.");
       // Refresh user data so placeholders show new values.
