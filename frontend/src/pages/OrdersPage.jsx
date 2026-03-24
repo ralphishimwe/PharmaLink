@@ -90,6 +90,11 @@ function OrdersPage() {
       while (attempts < maxAttempts && !pollCancelledRef.current) {
         attempts += 1;
         const list = await loadOrders({ silent: true });
+
+        // Component may have unmounted while the request was in-flight —
+        // check the cancel flag before touching any state.
+        if (pollCancelledRef.current) return;
+
         const target = list.find(
           (o) => String(o._id) === String(lastPaymentOrderId),
         );
@@ -105,12 +110,22 @@ function OrdersPage() {
           return;
         }
 
-        await new Promise((r) => setTimeout(r, delayMs));
+        // Wait before next attempt, but bail immediately if cancelled.
+        await new Promise((r) => {
+          const t = setTimeout(r, delayMs);
+          // If cancelled during the sleep, resolve early.
+          const check = setInterval(() => {
+            if (pollCancelledRef.current) { clearTimeout(t); clearInterval(check); r(); }
+          }, 200);
+          setTimeout(() => clearInterval(check), delayMs + 50);
+        });
       }
 
       // If not confirmed within polling window, stop refreshing.
-      setIsRefreshingPayment(false);
-      setRefreshingOrderId(null);
+      if (!pollCancelledRef.current) {
+        setIsRefreshingPayment(false);
+        setRefreshingOrderId(null);
+      }
     };
 
     poll();

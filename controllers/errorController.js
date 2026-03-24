@@ -80,6 +80,13 @@ module.exports = (err, req, res, next) => {
   err.status = err.status || "error";
 
   if (process.env.NODE_ENV === "development") {
+    // Translate known DB errors to friendly messages even in dev so the
+    // raw MongoDB E11000 / ValidationError text never leaks to the client.
+    if (err.code === 11000) {
+      const friendly = handleDuplicateFieldsDB(err);
+      err.message = friendly.message;
+      err.statusCode = friendly.statusCode;
+    }
     sendErrDev(err, res);
   } else if (process.env.NODE_ENV === "production") {
     // Spread err and explicitly copy non-enumerable Mongoose error properties

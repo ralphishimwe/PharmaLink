@@ -77,27 +77,27 @@ function PharmaciesPage() {
       )}
 
       {!loading && !error && pharmacies.length > 0 && (
-        <ul className="pharmacies-grid">
+        <div className="pharmacies-grid">
           {pharmacies.map((pharmacy) => (
-            <li key={pharmacy._id}>
-              <article className="pharmacy-card">
-                <h2 className="pharmacy-card-title">{pharmacy.name}</h2>
-                <p className="pharmacy-card-address">{pharmacy.address}</p>
-                <p className="pharmacy-card-hours">
-                  <span className="pharmacy-card-label">Opening hours</span>
-                  <br />
+            <article key={pharmacy._id} className="home-pharmacy-card">
+              <div className="home-pharmacy-card-icon">🏥</div>
+              <h3 className="home-pharmacy-card-name">{pharmacy.name}</h3>
+              <p className="home-pharmacy-address">{pharmacy.address}</p>
+              {pharmacy.openingHours && (
+                <p className="home-pharmacy-hours">
+                  <span>🕐</span>
                   {pharmacy.openingHours}
                 </p>
-                <Link
-                  to={`/pharmacies/${pharmacy._id}`}
-                  className="pharmacy-card-visit"
-                >
-                  Visit
-                </Link>
-              </article>
-            </li>
+              )}
+              <Link
+                to={`/pharmacies/${pharmacy._id}`}
+                className="home-pharmacy-btn"
+              >
+                Visit Pharmacy →
+              </Link>
+            </article>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

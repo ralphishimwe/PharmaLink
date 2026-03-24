@@ -22,7 +22,7 @@ const inventorySchema = new mongoose.Schema(
     },
     quantity: {
       type: Number,
-      required: [true, "A Pharmacy product must have quanity"],
+      required: [true, "A Pharmacy product must have quantity"],
       min: 1,
     },
     batchNo: {

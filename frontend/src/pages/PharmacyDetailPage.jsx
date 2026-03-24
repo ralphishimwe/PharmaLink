@@ -9,10 +9,11 @@ const MEDICINE_PLACEHOLDER =
 
 function resolveImageUrl(image) {
   if (!image) return MEDICINE_PLACEHOLDER;
+  // Already a full URL (e.g. https://…)
   if (typeof image === "string" && image.startsWith("http")) return image;
-  const base = "http://localhost:9000";
-  const path = typeof image === "string" ? image.replace(/^\//, "") : "";
-  return `${base}/${path}`;
+  // Local file dropped in public/medicines/ — served by Vite at /medicines/<filename>
+  const filename = typeof image === "string" ? image.replace(/^.*[\\/]/, "") : "";
+  return `/medicines/${filename}`;
 }
 
 /**
@@ -32,6 +33,14 @@ function PharmacyDetailPage() {
   const [errorPharmacy, setErrorPharmacy] = useState("");
   const [errorInventory, setErrorInventory] = useState("");
   const [actionError, setActionError] = useState("");
+
+  // Auto-dismiss action error after 6 seconds so stale messages don't persist
+  // when the user scrolls to a different item without retrying.
+  useEffect(() => {
+    if (!actionError) return;
+    const t = setTimeout(() => setActionError(""), 6000);
+    return () => clearTimeout(t);
+  }, [actionError]);
 
   const [buyingMedicineId, setBuyingMedicineId] = useState(null);
 

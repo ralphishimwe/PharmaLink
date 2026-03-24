@@ -26,11 +26,13 @@
   padding: 24px 0;
 }
 
-/* Navbar */
+/* ── Navbar ───────────────────────────────────────────────── */
 .navbar {
   background: #1e3a5f;
   color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  position: relative;
+  z-index: 100;
 }
 
 .navbar-inner {
@@ -40,7 +42,6 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  flex-wrap: wrap;
 }
 
 .navbar-logo {
@@ -55,17 +56,18 @@
   color: #bfdbfe;
 }
 
+/* Desktop links */
 .navbar-links {
   display: flex;
   align-items: center;
   gap: 20px;
-  flex-wrap: wrap;
 }
 
 .navbar-links a {
   color: #e2e8f0;
   text-decoration: none;
   font-size: 0.95rem;
+  white-space: nowrap;
 }
 
 .navbar-links a:hover {
@@ -86,6 +88,7 @@
   text-decoration: none;
 }
 
+/* Desktop auth button */
 .navbar-logout {
   margin-left: 8px;
   padding: 8px 14px;
@@ -95,10 +98,111 @@
   color: #fff;
   font-size: 0.9rem;
   cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
 .navbar-logout:hover {
   background: rgba(255, 255, 255, 0.12);
+}
+
+/* ── Hamburger button (mobile only) ──────────────────────── */
+.navbar-hamburger {
+  display: none;           /* hidden on desktop */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+/* Three bars */
+.navbar-hamburger span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Animate to X when open */
+.navbar-hamburger--open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.navbar-hamburger--open span:nth-child(2) {
+  opacity: 0;
+}
+.navbar-hamburger--open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Mobile dropdown menu ────────────────────────────────── */
+.navbar-mobile-menu {
+  background: #1e3a5f;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 0 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-mobile-links {
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar-mobile-links a {
+  color: #e2e8f0;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 13px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  transition: background 0.12s ease;
+}
+
+.navbar-mobile-links a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.navbar-mobile-auth {
+  padding: 14px 20px 0;
+}
+
+.navbar-mobile-logout {
+  display: block;
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font-size: 0.97rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+}
+
+.navbar-mobile-logout:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Responsive: switch to hamburger below 768px ─────────── */
+@media (max-width: 767px) {
+  .navbar-links--desktop,
+  .navbar-auth--desktop {
+    display: none;
+  }
+
+  .navbar-hamburger {
+    display: flex;
+  }
 }
 
 /* Footer */
@@ -131,100 +235,4 @@
   color: #64748b;
 }
 
-/* ---------- Homepage ---------- */
-
-.home {
-  width: 100%;
-}
-
-.home-hero {
-  text-align: center;
-  padding: 32px 0 40px;
-  border-bottom: 1px solid #e2e8f0;
-  margin-bottom: 32px;
-}
-
-.home-hero h1 {
-  margin: 0 0 12px;
-  font-size: clamp(1.75rem, 4vw, 2.25rem);
-  color: #0f172a;
-  font-weight: 700;
-}
-
-.home-hero-subtitle {
-  margin: 0;
-  font-size: 1.05rem;
-  color: #64748b;
-  max-width: 520px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.5;
-}
-
-.home-featured h2 {
-  margin: 0 0 20px;
-  font-size: 1.25rem;
-  color: #1e293b;
-}
-
-/* Responsive: 4 columns on wide screens, fewer on tablets/phones */
-.home-pharmacy-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-@media (max-width: 992px) {
-  .home-pharmacy-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 520px) {
-  .home-pharmacy-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.home-pharmacy-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
-}
-
-.home-pharmacy-card h3 {
-  margin: 0;
-  font-size: 1.05rem;
-  color: #0f172a;
-  line-height: 1.3;
-}
-
-.home-pharmacy-address {
-  margin: 0;
-  flex: 1;
-  font-size: 0.9rem;
-  color: #64748b;
-  line-height: 1.45;
-}
-
-.home-pharmacy-btn {
-  display: inline-block;
-  text-align: center;
-  margin-top: 4px;
-  padding: 10px 14px;
-  background: #2563eb;
-  color: #fff !important;
-  text-decoration: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  transition: background 0.15s ease;
-}
-
-.home-pharmacy-btn:hover {
-  background: #1d4ed8;
-}
+/* Homepage styles are in home.css */

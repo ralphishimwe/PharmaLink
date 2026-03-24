@@ -2,6 +2,17 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../utils/api";
 import "../styles/search.css";
+import "../styles/pharmacies.css";
+
+const MEDICINE_PLACEHOLDER =
+  "https://placehold.co/280x180/e2e8f0/64748b?text=Medicine";
+
+function resolveImageUrl(image) {
+  if (!image) return MEDICINE_PLACEHOLDER;
+  if (typeof image === "string" && image.startsWith("http")) return image;
+  const filename = typeof image === "string" ? image.replace(/^.*[\\/]/, "") : "";
+  return `/medicines/${filename}`;
+}
 
 /**
  * Sort options → query params for GET /medicines/search
@@ -223,7 +234,7 @@ function SearchPage() {
       )}
 
       {!loading && results.length > 0 && (
-        <ul className="search-results-grid">
+        <ul className="inventory-medicine-grid">
           {results.map((item) => {
             const pharmacyId =
               typeof item.pharmacyId === "object"
@@ -236,41 +247,48 @@ function SearchPage() {
             const rowKey = `${pharmacyId}-${medicineId}-${item.price}`;
             const inStock = item.quantity > 0;
             const isBuying = buyingKey === rowKey;
+            const imgSrc = resolveImageUrl(item.image);
 
             return (
               <li key={item.inventoryId || rowKey}>
-                <article className="search-result-card">
-                  <h2 className="search-result-medicine">{item.medicineName}</h2>
-                  <p className="search-result-pharmacy">{item.pharmacyName}</p>
-                  <p className="search-result-address">{item.pharmacyAddress}</p>
-                  <p className="search-result-price">
+                <article className="inventory-medicine-card">
+                  <div className="inventory-medicine-image-wrap">
+                    <img
+                      src={imgSrc}
+                      alt=""
+                      className="inventory-medicine-image"
+                      loading="lazy"
+                      onError={(e) => { e.currentTarget.src = MEDICINE_PLACEHOLDER; }}
+                    />
+                  </div>
+                  <h3 className="inventory-medicine-name">
+                    {item.medicineName}
+                    {item.dosageForm && (
+                      <span className="inventory-medicine-form"> · {item.dosageForm}</span>
+                    )}
+                  </h3>
+                  <p className="inventory-medicine-price">
                     {Number(item.price).toLocaleString()} RWF
                   </p>
-                  <p
-                    className={
-                      inStock
-                        ? "search-result-stock search-result-stock--yes"
-                        : "search-result-stock search-result-stock--no"
-                    }
-                  >
-                    {inStock ? `In stock (${item.quantity})` : "Out of stock"}
+                  <p className="search-result-pharmacy">{item.pharmacyName}</p>
+                  <p className="search-result-address">{item.pharmacyAddress}</p>
+                  <p className={inStock ? "inventory-stock inventory-stock--yes" : "inventory-stock inventory-stock--no"}>
+                    {inStock ? "In stock" : "Out of stock"}
                   </p>
-                  <div className="search-result-actions">
-                    <Link
-                      to={`/pharmacies/${pharmacyId}`}
-                      className="search-btn search-btn--secondary"
-                    >
-                      View Pharmacy
-                    </Link>
-                    <button
-                      type="button"
-                      className="search-btn search-btn--primary"
-                      disabled={!inStock || isBuying}
-                      onClick={() => handleBuyNow(item)}
-                    >
-                      {isBuying ? "Please wait…" : "Buy Now"}
-                    </button>
-                  </div>
+                  <Link
+                    to={`/pharmacies/${pharmacyId}`}
+                    className="search-btn search-btn--secondary"
+                  >
+                    View Pharmacy
+                  </Link>
+                  <button
+                    type="button"
+                    className="inventory-buy-btn"
+                    disabled={!inStock || isBuying}
+                    onClick={() => handleBuyNow(item)}
+                  >
+                    {isBuying ? "Please wait…" : "Buy Now"}
+                  </button>
                 </article>
               </li>
             );

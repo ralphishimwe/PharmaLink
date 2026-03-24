@@ -250,3 +250,30 @@
 .search-btn--secondary:hover {
   background: #eff6ff;
 }
+
+/* Pharmacy info lines shown inside the shared medicine card on search results */
+.search-result-pharmacy {
+  margin: 0 14px 2px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e3a5f;
+}
+
+.search-result-address {
+  margin: 0 14px 8px;
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* "View Pharmacy" link inside the card */
+.inventory-medicine-card .search-btn--secondary {
+  display: block;
+  text-align: center;
+  margin: 0 14px 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+}

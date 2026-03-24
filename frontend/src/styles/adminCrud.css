@@ -1,0 +1,185 @@
+.admin-crud {
+  width: 100%;
+}
+
+.admin-crud-header h2 {
+  margin: 0 0 12px;
+  color: #0f172a;
+}
+
+.admin-crud-search input {
+  width: 100%;
+  max-width: 420px;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.admin-crud-create {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.admin-crud-create h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  color: #1e293b;
+}
+
+.admin-crud-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.admin-crud-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.admin-crud-input {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.admin-crud-input--compact {
+  min-width: 120px;
+  padding: 7px 8px;
+  font-size: 0.85rem;
+}
+
+.admin-crud-create button,
+.admin-crud-actions button {
+  padding: 8px 14px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1e293b;
+  transition: opacity 0.15s;
+}
+
+.admin-crud-create button:hover,
+.admin-crud-actions button:hover {
+  opacity: 0.88;
+}
+
+.admin-crud-create button:disabled,
+.admin-crud-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.admin-crud-create button {
+  margin-top: 12px;
+}
+
+/* Create — sidebar blue */
+.admin-crud-btn--create {
+  background: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #fff !important;
+}
+
+/* Edit — green */
+.admin-crud-btn--edit,
+.admin-crud-btn--save {
+  background: #16a34a !important;
+  border-color: #16a34a !important;
+  color: #fff !important;
+}
+
+/* Delete — red */
+.admin-crud-btn--delete {
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+  color: #fff !important;
+}
+
+/* Cancel — neutral */
+.admin-crud-btn--cancel {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+.admin-crud-status {
+  color: #64748b;
+}
+
+.admin-crud-error {
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.admin-crud-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-crud-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.admin-crud-table th,
+.admin-crud-table td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-crud-table th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #64748b;
+}
+
+.admin-crud-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Truncated long-value cell — hover shows full value via title tooltip,
+   click opens an alert with the full text (and copies to clipboard). */
+.admin-crud-truncated {
+  cursor: pointer;
+  color: #3b82f6;
+  text-decoration: underline dotted;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.admin-crud-truncated:hover {
+  color: #2563eb;
+}
+
+/* Inline error shown inside the edit row when save fails */
+.admin-crud-edit-error {
+  margin: 0 0 6px;
+  font-size: 0.82rem;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 5px 8px;
+  white-space: normal;
+}
+

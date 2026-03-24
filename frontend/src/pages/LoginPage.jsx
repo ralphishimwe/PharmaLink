@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "../components/AuthForm";
 import api from "../utils/api";
+import { useAuth } from "../context/AuthContext";
 
 function LoginPage() {
   // Local UI state for login form inputs
@@ -12,6 +13,9 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  // setRole updates AuthContext state so App.jsx and Navbar re-render
+  // immediately with the correct role after login — no reload needed.
+  const { setRole } = useAuth();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -37,23 +41,18 @@ function LoginPage() {
 
       localStorage.setItem("token", token);
 
-      // Role-based redirect after login.
-      // Always overwrite/clear role so we never keep an old value from a previous session.
-      localStorage.removeItem("role");
-
-      let role = response.data?.data?.user?.role;
-      if (!role) {
-        // Fallback: derive role from the authenticated user endpoint.
-        try {
-          const meRes = await api.get("/users/me");
-          role = meRes.data?.data?.data?.role;
-        } catch (e) {
-          // If this fails, we just treat the user as non-staff.
-          role = null;
-        }
+      // Fetch the authoritative role from the server, then push it into
+      // AuthContext via setRole(). This simultaneously updates localStorage
+      // AND triggers a React re-render, so route guards evaluate instantly.
+      let role = null;
+      try {
+        const meRes = await api.get("/users/me");
+        role = meRes.data?.data?.data?.role || null;
+      } catch (e) {
+        role = null;
       }
 
-      if (role) localStorage.setItem("role", role);
+      setRole(role); // ← updates context state + localStorage in one call
 
       // Staff users land on their inventory dashboard.
       if (role === "staff") {

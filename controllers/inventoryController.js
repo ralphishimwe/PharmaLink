@@ -3,6 +3,7 @@ const catchAsync = require("../utils/catchAsync");
 const factory = require("./handlerFactory");
 const AppError = require("../utils/appError");
 const getStaffPharmacy = require("../utils/getStaffPharmacy");
+const APIFeatures = require("../utils/apiFeautres");
 
 // Nested read: all inventory entries for a specific pharmacy, with
 // optional search/sort on medicine name and price.
@@ -153,8 +154,29 @@ exports.deleteInventoryForStaffOrAdmin = catchAsync(async (req, res, next) => {
 
 exports.deleteInventory = factory.deleteOne(Inventory);
 exports.createInventory = factory.createOne(Inventory);
-exports.getAllInventories = factory.getAll(Inventory);
 exports.updateInventory = factory.updateOne(Inventory);
+
+// Custom getAll that populates pharmacy.name and medicine.name so the admin
+// table shows human-readable names instead of raw ObjectIds.
+exports.getAllInventories = catchAsync(async (req, res, next) => {
+  const baseQuery = Inventory.find()
+    .populate({ path: "pharmacy", select: "name" })
+    .populate({ path: "medicine", select: "name" });
+
+  const features = new APIFeatures(baseQuery, req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
+
+  const doc = await features.query;
+
+  res.status(200).json({
+    status: "success",
+    results: doc.length,
+    data: { data: doc },
+  });
+});
 exports.getInventory = factory.getOne(Inventory, {
   path: "pharmacy medicine",
   select: "name",

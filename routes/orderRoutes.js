@@ -46,7 +46,7 @@ router
 
 router
   .route("/:id")
-  .get(orderController.getOrder)
+  .get(authController.restrictTo("user", "staff", "admin"), orderController.getOrder)
   .patch(
     authController.restrictTo("staff", "admin"),
     orderController.updateOrderStatusForStaffOrAdmin

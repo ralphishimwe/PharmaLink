@@ -49,10 +49,14 @@ if (process.env.NODE_ENV === "development") {
 }
 
 //Rate Limiting user requests from same API
+// 500 requests per 15 minutes per IP — generous enough for facilitator/demo
+// testing while still protecting against automated abuse.
 const limiter = rateLimit({
-  max: 100, //Going to allow 100 requests in hour below is one hour in millisecond
-  windowMs: 60 * 60 * 1000, //onehour(60 minutes) * seconds(60) * millisecondsinasecond(1000)
-  message: "Too many requests from this IP, please try again later.",
+  max: 500,
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  message: "Too many requests from this IP, please try again in 15 minutes.",
+  standardHeaders: true,  // Return rate-limit info in RateLimit-* headers
+  legacyHeaders: false,
 });
 
 app.use("/api", limiter);

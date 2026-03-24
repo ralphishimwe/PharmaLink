@@ -2,6 +2,7 @@ const Order = require("../models/orderModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const factory = require("./handlerFactory");
+const APIFeatures = require("../utils/apiFeautres");
 const inventoryService = require("../services/inventoryService");
 const orderService = require("../services/orderService");
 const paymentService = require("../services/paymentService");
@@ -90,7 +91,28 @@ exports.createOrder = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteOrder = factory.deleteOne(Order);
-exports.getAllOrders = factory.getAll(Order);
+
+// Custom getAll that populates user.fullname and pharmacy.name so the admin
+// orders table shows real names instead of raw ObjectIds.
+exports.getAllOrders = catchAsync(async (req, res, next) => {
+  const baseQuery = Order.find()
+    .populate({ path: "user",     select: "fullname" })
+    .populate({ path: "pharmacy", select: "name"     });
+
+  const features = new APIFeatures(baseQuery, req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
+
+  const doc = await features.query;
+
+  res.status(200).json({
+    status: "success",
+    results: doc.length,
+    data: { data: doc },
+  });
+});
 
 /** List orders for the logged-in user (newest first). */
 exports.getMyOrders = catchAsync(async (req, res, next) => {

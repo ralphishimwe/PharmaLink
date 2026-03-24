@@ -3,6 +3,7 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const factory = require("./handlerFactory");
 const getStaffPharmacy = require("../utils/getStaffPharmacy");
+const APIFeatures = require("../utils/apiFeautres");
 
 // Get pharmacies near the user or custom coordinates using MongoDB geospatial queries.
 // - If lat/lng are provided as query params, use those coordinates.
@@ -86,7 +87,25 @@ exports.getNearbyPharmacies = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getAllPharmacies = factory.getAll(Pharmacy);
+// Custom getAll: populates staff.fullname so the admin table shows the
+// staff member's name instead of their raw ObjectId.
+exports.getAllPharmacies = catchAsync(async (req, res, next) => {
+  const baseQuery = Pharmacy.find().populate({ path: "staff", select: "fullname role" });
+
+  const features = new APIFeatures(baseQuery, req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
+
+  const doc = await features.query;
+
+  res.status(200).json({
+    status: "success",
+    results: doc.length,
+    data: { data: doc },
+  });
+});
 exports.getPharmacy = factory.getOne(Pharmacy, {
   path: "staff",
   select: "-__v -location -role",

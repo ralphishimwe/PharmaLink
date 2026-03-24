@@ -52,12 +52,29 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.createUser = (req, res) => {
-  res.status(500).json({
-    status: 'Server Error',
-    message: 'This route Not defined!! Please use /signup Instead',
+exports.createUser = catchAsync(async (req, res, next) => {
+  // Uses User.create() so all model pre-save hooks run (password hashing, geocoding, etc.)
+  const newUser = await User.create({
+    fullname:        req.body.fullname,
+    email:           req.body.email,
+    phone:           req.body.phone,
+    address:         req.body.address,
+    role:            req.body.role || 'user',
+    photo:           req.body.photo,
+    password:        req.body.password,
+    passwordConfirm: req.body.passwordConfirm,
   });
-};
+
+  // Never send the hashed password back
+  newUser.password = undefined;
+
+  res.status(201).json({
+    status: 'success',
+    data: {
+      data: newUser,
+    },
+  });
+});
 
 exports.getUser = factory.getOne(User);
 exports.getAllUsers = factory.getAll(User);
