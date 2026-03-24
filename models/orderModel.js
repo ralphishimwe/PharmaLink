@@ -13,6 +13,7 @@ const orderSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
+      required: [true, "An order must belong to a User"],
     },
     items:[
       {

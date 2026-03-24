@@ -1,0 +1,238 @@
+/* App shell: navbar + scrollable main + footer */
+
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Login/signup: center form without forcing a second full viewport height */
+.layout-main .auth-page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+/* ── Navbar ───────────────────────────────────────────────── */
+.navbar {
+  background: #1e3a5f;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  position: relative;
+  z-index: 100;
+}
+
+.navbar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navbar-logo {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #fff;
+  text-decoration: none;
+  margin-right: auto;
+}
+
+.navbar-logo:hover {
+  color: #bfdbfe;
+}
+
+/* Desktop links */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar-links a {
+  color: #e2e8f0;
+  text-decoration: none;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.navbar-links a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.navbar-profile-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+.navbar-profile-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  text-decoration: none;
+}
+
+/* Desktop auth button */
+.navbar-logout {
+  margin-left: 8px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.navbar-logout:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ── Hamburger button (mobile only) ──────────────────────── */
+.navbar-hamburger {
+  display: none;           /* hidden on desktop */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+/* Three bars */
+.navbar-hamburger span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Animate to X when open */
+.navbar-hamburger--open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.navbar-hamburger--open span:nth-child(2) {
+  opacity: 0;
+}
+.navbar-hamburger--open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Mobile dropdown menu ────────────────────────────────── */
+.navbar-mobile-menu {
+  background: #1e3a5f;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 0 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-mobile-links {
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar-mobile-links a {
+  color: #e2e8f0;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 13px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  transition: background 0.12s ease;
+}
+
+.navbar-mobile-links a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.navbar-mobile-auth {
+  padding: 14px 20px 0;
+}
+
+.navbar-mobile-logout {
+  display: block;
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font-size: 0.97rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+}
+
+.navbar-mobile-logout:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Responsive: switch to hamburger below 768px ─────────── */
+@media (max-width: 767px) {
+  .navbar-links--desktop,
+  .navbar-auth--desktop {
+    display: none;
+  }
+
+  .navbar-hamburger {
+    display: flex;
+  }
+}
+
+/* Footer */
+.site-footer {
+  background: #f1f5f9;
+  border-top: 1px solid #e2e8f0;
+  padding: 16px;
+  text-align: center;
+}
+
+.site-footer p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+/* Simple placeholder pages inside layout */
+.page-placeholder {
+  padding: 16px 0;
+}
+
+.page-placeholder h1 {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+  color: #1e293b;
+}
+
+.page-placeholder p {
+  margin: 0;
+  color: #64748b;
+}
+
+/* Homepage styles are in home.css */

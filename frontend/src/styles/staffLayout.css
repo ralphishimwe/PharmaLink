@@ -1,0 +1,44 @@
+.staff-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+}
+
+.staff-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 18px 16px 48px;
+}
+
+.staff-main-header {
+  margin: 0 0 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.staff-main-title {
+  margin: 0;
+  font-size: 1.6rem;
+  color: #0f172a;
+}
+
+.staff-main-pharmacy {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.staff-content {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+

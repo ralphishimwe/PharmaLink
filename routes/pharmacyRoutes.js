@@ -14,6 +14,15 @@ router.get(
   pharmacyController.getNearbyPharmacies,
 );
 
+// Staff: get assigned pharmacy (for staff dashboard header)
+// IMPORTANT: this route must come BEFORE "/:id" to avoid "/my" being treated as an id.
+router.get(
+  "/my",
+  authController.protect,
+  authController.restrictTo("staff"),
+  pharmacyController.getMyPharmacyForStaff,
+);
+
 router
   .route("/")
   .get(pharmacyController.getAllPharmacies)

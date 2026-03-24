@@ -1,5 +1,6 @@
 const path = require("path");
 const express = require("express");
+const cors = require("cors");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
@@ -30,22 +31,59 @@ app.use(express.static(path.join(__dirname, "public")));
 //Security Http Headers
 app.use(helmet());
 
+// Enable CORS.
+// In development:  FRONTEND_URL is not set, so only localhost Vite ports are allowed.
+// In production:   FRONTEND_URL=https://your-app.vercel.app on Render so the
+//                  deployed frontend is also allowed.
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (curl, Postman, server-to-server).
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: origin ${origin} is not allowed`));
+  },
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+
 // Development logging
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
 //Rate Limiting user requests from same API
+// 500 requests per 15 minutes per IP — generous enough for facilitator/demo
+// testing while still protecting against automated abuse.
 const limiter = rateLimit({
-  max: 100, //Going to allow 100 requests in hour below is one hour in millisecond
-  windowMs: 60 * 60 * 1000, //onehour(60 minutes) * seconds(60) * millisecondsinasecond(1000)
-  message: "Too many requests from this IP, please try again later.",
+  max: 500,
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  message: "Too many requests from this IP, please try again in 15 minutes.",
+  standardHeaders: true,  // Return rate-limit info in RateLimit-* headers
+  legacyHeaders: false,
 });
 
 app.use("/api", limiter);
 
-//body parser, reading data from body into req.body
-app.use(express.json({ limit: "10kb" }));
+// Body parser (JSON) + capture raw bytes for Stripe webhook verification.
+// Stripe requires the original request payload bytes to verify the signature.
+app.use(
+  express.json({
+    limit: "10kb",
+    verify: (req, res, buf) => {
+      req.rawBody = buf;
+    },
+  }),
+);
 app.use(cookieParser());
 
 //Data Sanitization against NoSql query Injection

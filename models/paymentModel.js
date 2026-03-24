@@ -13,15 +13,10 @@ const paymentSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Payment must have Amount to paid"],
     },
-    paymentMethod: {
-      type: String,
-      required: [true, "Payment must have method used to pay"],
-      enum: ["mobile_money", "bank_transfer", "card"],
-    },
     provider: {
       type: String,
       required: [true, "Payment must have provider used for paying"],
-      enum: ["irembopay"],
+      enum: ["stripe"],
     },
     transactionID: {
       type: String,

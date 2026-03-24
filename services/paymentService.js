@@ -7,8 +7,7 @@ const { getProvider } = require("./paymentProviders/providerFactory");
 
 exports.getOrCreatePendingPayment = async ({
   order,
-  paymentMethod,
-  provider = "irembopay",
+  provider = "stripe",
   session,
 } = {}) => {
   if (!order?._id) throw new AppError("Valid order is required", 400);
@@ -20,14 +19,11 @@ exports.getOrCreatePendingPayment = async ({
 
   if (existingPending) return existingPending;
 
-  if (!paymentMethod) throw new AppError("paymentMethod is required", 400);
-
   return await Payment.create(
     [
       {
         order: order._id,
         amount: order.totalAmount,
-        paymentMethod,
         provider,
         status: "pending",
       },
@@ -41,6 +37,8 @@ exports.initiatePaymentWithProvider = async ({ payment, order } = {}) => {
   const initiation = await providerModule.initiate({
     orderId: String(order._id),
     amount: order.totalAmount,
+    orderItems: order.items, // Pass order items for Stripe line items
+    currency: "usd", // Default currency, can be made configurable
   });
 
   payment.providerReference = initiation.providerReference;
@@ -54,7 +52,7 @@ exports.applyPaymentResult = async ({
   orderId,
   transactionId,
   status,
-  provider = "irembopay",
+  provider = "stripe",
 } = {}) => {
   if (!orderId) throw new AppError("orderId is required", 400);
   if (!transactionId) throw new AppError("transactionId is required", 400);
@@ -77,7 +75,9 @@ exports.applyPaymentResult = async ({
           provider,
           status: "pending",
         }).session(session)) ||
-        (await Payment.findOne({ order: order._id, provider }).session(session));
+        (await Payment.findOne({ order: order._id, provider }).session(
+          session,
+        ));
 
       if (!payment) throw new AppError("No Payment Found for this order", 404);
 
@@ -90,7 +90,10 @@ exports.applyPaymentResult = async ({
       payment.status = status;
       payment.transactionID = transactionId;
       if (status === "successful") payment.paidAt = new Date();
-      updatedPayment = await payment.save({ session, validateBeforeSave: true });
+      updatedPayment = await payment.save({
+        session,
+        validateBeforeSave: true,
+      });
 
       if (status === "successful") {
         // Deduct inventory atomically + idempotently
@@ -99,8 +102,10 @@ exports.applyPaymentResult = async ({
           session,
         });
 
-        if (updatedOrder.paymentStatus !== "paid") updatedOrder.paymentStatus = "paid";
-        if (updatedOrder.orderStatus === "pending") updatedOrder.orderStatus = "confirmed";
+        if (updatedOrder.paymentStatus !== "paid")
+          updatedOrder.paymentStatus = "paid";
+        if (updatedOrder.orderStatus === "pending")
+          updatedOrder.orderStatus = "confirmed";
         await updatedOrder.save({ session, validateBeforeSave: false });
       }
     });
@@ -110,4 +115,3 @@ exports.applyPaymentResult = async ({
     session.endSession();
   }
 };
-
