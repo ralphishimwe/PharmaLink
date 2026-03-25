@@ -277,9 +277,6 @@ function ProfilePage() {
               placeholder={currentUser?.phone ? String(currentUser.phone) : "10-digit phone"}
               value={profileForm.phone}
               onChange={handleProfileChange}
-              inputMode="numeric"
-              pattern="\\d{10}"
-              title="Phone number must be exactly 10 digits"
             />
           </div>
 
