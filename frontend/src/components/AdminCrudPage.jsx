@@ -107,7 +107,7 @@ function AdminCrudPage({ title, endpoint, fields = [] }) {
     try {
       setCreateBusy(true);
       setError("");
-      await api.post(endpoint, normalizePayload(createData, fields));
+      await api.post(endpoint, normalizePayload(createData, fields, "create"));
       setCreateData(buildEmptyForm(fields));
       await loadRecords();
     } catch (err) {
@@ -146,7 +146,7 @@ function AdminCrudPage({ title, endpoint, fields = [] }) {
       setSaveBusyId(String(rowId));
       setEditError("");
       setError("");
-      await api.patch(`${endpoint}/${rowId}`, normalizePayload(editData, fields));
+      await api.patch(`${endpoint}/${rowId}`, normalizePayload(editData, fields, "edit"));
       cancelEdit();
       await loadRecords();
     } catch (err) {
@@ -425,8 +425,13 @@ function buildEmptyForm(fields) {
   }, {});
 }
 
-function normalizePayload(data, fields) {
+// mode: "create" skips fields with creatable === false
+//       "edit"   skips fields with editable === false
+function normalizePayload(data, fields, mode = "create") {
   return fields.reduce((acc, f) => {
+    if (mode === "create" && f.creatable === false) return acc;
+    if (mode === "edit" && f.editable === false) return acc;
+
     let value = data[f.name];
     if (typeof f.toApi === "function") {
       value = f.toApi(value, data);
