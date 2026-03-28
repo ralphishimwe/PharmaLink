@@ -20,9 +20,15 @@ const pharmacySchema = new mongoose.Schema(
     },
     photo: String,
     phone: {
-      type: Number,
+      type: String,
       unique: true,
       required: [true, "A pharmacy must provide phone number"],
+      validate: {
+        validator: function (v) {
+          return /^\d{10}$/.test(v);
+        },
+        message: "Phone number must be exactly 10 digits.",
+      },
     },
     address: {
       type: String,

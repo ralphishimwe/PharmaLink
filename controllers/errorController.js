@@ -79,35 +79,27 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
+  // Always translate known DB/JWT errors into friendly messages so raw
+  // Mongoose / MongoDB text never reaches the client in any environment.
+  let error = { ...err };
+  error.message = err.message;
+  error.name = err.name;
+  error.statusCode = err.statusCode;
+  error.status = err.status;
+  error.code = err.code;
+  if (err.path) error.path = err.path;
+  if (err.value) error.value = err.value;
+  if (err.errors) error.errors = err.errors;
+
+  if (error.name === "CastError") error = handleCastErrorDB(error);
+  if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+  if (error.name === "ValidationError") error = handleValidationErrorDB(error);
+  if (error.name === "JsonWebTokenError") error = handleJWTError();
+  if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
+
   if (process.env.NODE_ENV === "development") {
-    // Translate known DB errors to friendly messages even in dev so the
-    // raw MongoDB E11000 / ValidationError text never leaks to the client.
-    if (err.code === 11000) {
-      const friendly = handleDuplicateFieldsDB(err);
-      err.message = friendly.message;
-      err.statusCode = friendly.statusCode;
-    }
-    sendErrDev(err, res);
-  } else if (process.env.NODE_ENV === "production") {
-    // Spread err and explicitly copy non-enumerable Mongoose error properties
-    let error = { ...err };
-    error.message = err.message;
-    error.name = err.name;
-    error.statusCode = err.statusCode;
-    error.status = err.status;
-    error.code = err.code;
-
-    // For CastError, preserve path and value
-    if (err.path) error.path = err.path;
-    if (err.value) error.value = err.value;
-
-    if (error.name === "CastError") error = handleCastErrorDB(error);
-    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-    if (error.name === "ValidationError")
-      error = handleValidationErrorDB(error);
-    if (error.name === "JsonWebTokenError") error = handleJWTError(error);
-    if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
-
+    sendErrDev(error, res);
+  } else {
     sendErrProd(error, res);
   }
 };

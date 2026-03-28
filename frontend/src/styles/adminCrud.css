@@ -44,15 +44,23 @@
   color: #475569;
 }
 
-.admin-crud-input {
+.admin-crud-input,
+.admin-crud-input select,
+select.admin-crud-input {
   width: 100%;
   padding: 9px 10px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   font-family: inherit;
+  font-size: inherit;
+  box-sizing: border-box;
+  height: auto;
+  line-height: normal;
 }
 
-.admin-crud-input--compact {
+.admin-crud-input--compact,
+.admin-crud-input--compact select,
+select.admin-crud-input--compact {
   min-width: 120px;
   padding: 7px 8px;
   font-size: 0.85rem;
