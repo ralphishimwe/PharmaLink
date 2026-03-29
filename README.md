@@ -44,8 +44,9 @@ Make sure you have the following installed on your machine before running the pr
 
 - [Node.js](https://nodejs.org/) v18 or higher
 - [npm](https://www.npmjs.com/) (comes with Node.js)
-- A [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) account with a cluster set up
-- A [Stripe](https://stripe.com) account for payment keys
+### Accounts required
+- A MongoDB Atlas account with a cluster set up
+- A Stripe account for handling payment
 
 ---
 
