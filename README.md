@@ -83,13 +83,7 @@ The backend will run on `http://localhost:9000`.
 - cd frontend
 - npm install
 
-
-#### 2. Create a `.env` file inside the `frontend` folder:
-
-VITE_API_URL=http://localhost:9000/api/v1
-
-
-#### 3. Start the frontend:
+#### 2. Start the frontend:
 
 npm run dev
 
