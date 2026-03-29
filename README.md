@@ -53,8 +53,8 @@ Make sure you have the following installed on your machine before running the pr
 ## Running Locally
 
 ### 1. Clone the repository
-git clone https://github.com/ralphishimwe/PharmaLink.git
-cd PharmaLink
+- git clone https://github.com/ralphishimwe/PharmaLink.git
+- cd PharmaLink
 
 ### 2. Set up the backend
 
