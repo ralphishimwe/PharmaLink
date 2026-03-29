@@ -60,18 +60,18 @@ Make sure you have the following installed on your machine before running the pr
 
 #### 1. Install backend dependencies from the root of the project:
 
-npm install
+- npm install
 
 
 #### 2. Create a `config.env` file in the root of the project with the following variables:
 This project requires environment variables to run locally and in production.
 
-A full list of required variables and their values can be found here under dependencies - config.env - Copy and paste all the variables and their values inside your config.env file:
-**Link: https://docs.google.com/document/d/1SZTP9Hl9i6zUnj5cirUNc-dRHwteJ-BW_HS5SMOC4Pg/edit?usp=sharing** 
+A full list of required variables and their values can be found here - Copy and paste all the variables and their values inside your new config.env file:
+**Link: https://docs.google.com/document/d/12wauGNtxjV_gk5iVCyqENEll6J2fbAUdMebQ1tSjSmY/edit?usp=sharing** 
 
 #### 3. Start the backend:
 
-npm start
+- npm start
 
 
 The backend will run on `http://localhost:9000`.
@@ -85,7 +85,7 @@ The backend will run on `http://localhost:9000`.
 
 #### 2. Start the frontend:
 
-npm run dev
+- npm run dev
 
 
 The app will open at `http://localhost:5173`.
