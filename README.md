@@ -66,26 +66,8 @@ npm install
 #### 2. Create a `config.env` file in the root of the project with the following variables:
 This project requires environment variables to run locally and in production.
 
-A full list of required variables and their values can be found here:  
-**Link: https://docs.google.com/document/d/1SZTP9Hl9i6zUnj5cirUNc-dRHwteJ-BW_HS5SMOC4Pg/edit?usp=sharing** [Summative Project Document – Environment Variables]
-
-###### .env structure:
-
-NODE_ENV=development
-PORT=9000
-
-DATABASE=cluster_url
-DATABASE_PASSWORD=mongodb_password
-
-JWT_SECRET=your_jwt_secret_key
-JWT_EXPIRES_IN=time
-JWT_COOKIE_EXPIRES_IN=time
-
-BASE_URL=http://localhost:9000
-
-STRIPE_SECRET_KEY=sk_test_stripe_secret_key
-STRIPE_WEBHOOK_SECRET=whsec_stripe_webhook_secret
-
+A full list of required variables and their values can be found here under dependencies - config.env link:  
+**Link: https://docs.google.com/document/d/1SZTP9Hl9i6zUnj5cirUNc-dRHwteJ-BW_HS5SMOC4Pg/edit?usp=sharing** 
 
 #### 3. Start the backend:
 
