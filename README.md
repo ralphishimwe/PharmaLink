@@ -80,8 +80,8 @@ The backend will run on `http://localhost:9000`.
 
 #### 1. Open a new terminal and navigate to the frontend folder:
 
-a. cd frontend
-b. npm install
+- cd frontend
+- npm install
 
 
 #### 2. Create a `.env` file inside the `frontend` folder:
