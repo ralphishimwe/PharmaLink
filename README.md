@@ -92,6 +92,27 @@ The app will open at `http://localhost:5173`.
 
 ---
 
+# Testing & Credentials
+
+**To allow to test the application without creating privileged accounts:**
+
+## Admin Access
+Use the following credentials to log in as an admin:
+
+Email: admin@pharmalink.test
+Password: Admin1234
+
+## Staff Access
+Use the following credentials to log in as a staff/facilitator:
+
+Email: staff@pharmalink.test
+Password: Staff1234
+
+Note: Only admins can create new staff or admin accounts. Use the provided credentials for testing.
+
+
+
+
 ## Deployment (How This Project Was Deployed)
 
 The frontend and backend were deployed on two separate platforms.
